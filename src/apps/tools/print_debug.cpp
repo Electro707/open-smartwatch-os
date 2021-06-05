@@ -42,8 +42,8 @@ void OswAppPrintDebug::loop(OswHal* hal) {
   printStatus(hal, "compiled", __DATE__);
   printStatus(hal, "compiled", __TIME__);
 
-  printStatus(hal, "DS3231", hal->hasDS3231() ? "OK" : "missing");
-  printStatus(hal, "BMA400", hal->hasBMA400() ? "OK" : "missing");
+  printStatus(hal, "DS3231", hal->hasRV8523() ? "OK" : "missing");
+  // printStatus(hal, "BMA400", hal->hasBMA400() ? "OK" : "missing");
   printStatus(hal, "PSRAM", String(ESP.getPsramSize(), 10).c_str());
 
 #if defined(GPS_EDITION)

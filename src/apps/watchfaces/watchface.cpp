@@ -16,7 +16,12 @@ void OswAppWatchface::drawWatch(OswHal* hal) {
   hal->gfx()->drawMinuteTicks(120, 120, 116, 112, ui->getForegroundDimmedColor());
   hal->gfx()->drawHourTicks(120, 120, 117, 107, ui->getForegroundColor());
 
+#ifndef DISABLE_SENSOR
   uint32_t steps = hal->getStepCount();
+#else
+  uint32_t steps = 0;
+#endif
+
   hal->gfx()->drawArc(120, 120, 0, 360 * (steps / 10800.0), 90, 93, 6,
                       steps > 10800 ? ui->getSuccessColor() : ui->getInfoColor(), true);
 

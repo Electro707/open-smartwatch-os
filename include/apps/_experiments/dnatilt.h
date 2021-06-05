@@ -1,6 +1,8 @@
 #ifndef OSW_APP_DNA_TILT_H
 #define OSW_APP_DNA_TILT_H
 
+#ifndef DISABLE_SENSOR
+
 #include <osw_hal.h>
 
 #include "osw_app.h"
@@ -14,5 +16,7 @@ class OswAppDNATilt : public OswApp {
 
  private:
 };
+
+#endif
 
 #endif

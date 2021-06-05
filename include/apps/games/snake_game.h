@@ -75,7 +75,9 @@ class OswAppSnakeGame : public OswApp {
 
   // Controls
   void buttonController(OswHal* hal);
+#ifndef DISABLE_SENSOR
   void accelerometerController(OswHal* hal);
+#endif
   void autoController();
   void useLastDirection();
 

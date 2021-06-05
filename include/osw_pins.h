@@ -14,12 +14,13 @@
 #define TFT_CS 5
 #define TFT_DC 12
 #define TFT_RST 33
-#define TFT_SCK 18
-#define TFT_MOSI 23
+#define TFT_SCK 14
+#define TFT_MOSI 13
 #define TFT_MISO -1  // no data coming back
-#define TFT_LED 9
+#define TFT_LED 27
 #endif
 
+#if defined(GPS_EDITION)
 #define SD_CS 4
 // SD_MISO 19
 // for SCK, MOSI see TFT
@@ -29,12 +30,13 @@
 #define GPS_FON 26
 #define GPS_3D_FIX 36
 #define GPS_GEO_FENCE 39
+#endif
 #define RX1 27
 #define TX1 14
 
 #define RTC_INT 32
-#define BMA_INT_1 34
-#define BMA_INT_2 35
+// #define BMA_INT_1 34
+// #define BMA_INT_2 35
 
 #if defined(GPS_EDITION)
 #define BTN_1 0
@@ -42,8 +44,8 @@
 #define BTN_3 13
 #else
 #define BTN_1 0
-#define BTN_2 10
-#define BTN_3 13
+#define BTN_2 36
+#define BTN_3 37
 #endif
 
 #define BTN_1_APP_SWITCH_TIMEOUT 500
@@ -52,7 +54,7 @@
 #define SCL 22
 #define SDA 21
 
-#define STAT_PWR 15
+#define STAT_PWR 39
 #define B_MON 25
 
 #endif

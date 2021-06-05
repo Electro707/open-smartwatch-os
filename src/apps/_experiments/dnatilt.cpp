@@ -1,3 +1,4 @@
+#ifndef DISABLE_SENSOR
 
 #include "./apps/_experiments/dnatilt.h"
 
@@ -47,3 +48,5 @@ void OswAppDNATilt::loop(OswHal* hal) {
     hal->getWiFi()->get("http://192.168.1.54/api/ladder/hue/incr", httpGetBuffer, HTTP_GET_BUF_LEN);
   }
 }
+
+#endif

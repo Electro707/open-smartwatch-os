@@ -29,7 +29,7 @@
 #include "./apps/tools/config_mgmt.h"
 #include "./apps/tools/print_debug.h"
 #include "./apps/tools/time_config.h"
-#include "./apps/tools/water_level.h"
+// #include "./apps/tools/water_level.h"
 #include "./apps/watchfaces/watchface.h"
 #include "./apps/watchfaces/watchface_binary.h"
 #include "./apps/watchfaces/watchface_digital.h"
@@ -111,7 +111,7 @@ void setup() {
   // mainAppSwitcher->registerApp(new OswAppPrintDebug());
   mainAppSwitcher->registerApp(new OswAppSnakeGame());
   mainAppSwitcher->registerApp(new OswAppStopWatch());
-  mainAppSwitcher->registerApp(new OswAppWaterLevel());
+  // mainAppSwitcher->registerApp(new OswAppWaterLevel());
   mainAppSwitcher->registerApp(new OswAppTimeConfig());
   mainAppSwitcher->registerApp(new OswAppConfigMgmt());
 #ifdef LUA_SCRIPTS
@@ -133,7 +133,9 @@ void setup() {
   hal->setupPower();
   hal->setupFileSystem();
   hal->setupButtons();
+#ifndef DISABLE_SENSOR
   hal->setupSensors();
+#endif
   hal->setupTime();
 
   hal->setupDisplay();
@@ -153,7 +155,7 @@ void loop() {
   static boolean delayedAppInit = true;
 
   hal->checkButtons();
-  hal->updateAccelerometer();
+  // hal->updateAccelerometer();
 
   mainAppSwitcher->loop(hal);
 
@@ -179,7 +181,7 @@ void loop() {
     // mainAppSwitcher->registerApp(new OswAppPrintDebug());
     mainAppSwitcher->registerApp(new OswAppSnakeGame());
     mainAppSwitcher->registerApp(new OswAppStopWatch());
-    mainAppSwitcher->registerApp(new OswAppWaterLevel());
+    // mainAppSwitcher->registerApp(new OswAppWaterLevel());
     mainAppSwitcher->registerApp(new OswAppTimeConfig());
     mainAppSwitcher->registerApp(new OswAppConfigMgmt());
 #ifdef LUA_SCRIPTS

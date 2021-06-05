@@ -1,4 +1,4 @@
-
+#ifndef DISABLE_SENSOR
 #include "./apps/tools/water_level.h"
 
 #include <gfx_util.h>
@@ -131,3 +131,5 @@ void OswAppWaterLevel::loop(OswHal* hal) {
 }
 
 void OswAppWaterLevel::stop(OswHal* hal) {}
+
+#endif

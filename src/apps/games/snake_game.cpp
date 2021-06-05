@@ -185,7 +185,9 @@ void OswAppSnakeGame::snakeGame(OswHal* hal) {
     buttonController(hal);
     useLastDirection();
   } else {
+#ifndef DISABLE_SENSOR
     accelerometerController(hal);
+#endif
   }
 #endif
 
@@ -318,6 +320,7 @@ void OswAppSnakeGame::buttonController(OswHal* hal) {
   }
 }
 
+#ifndef DISABLE_SENSOR
 void OswAppSnakeGame::accelerometerController(OswHal* hal) {
   float xAcceleration = hal->getAccelerationX();
   float yAcceleration = hal->getAccelerationY();
@@ -346,6 +349,7 @@ void OswAppSnakeGame::accelerometerController(OswHal* hal) {
     }
   }
 }
+#endif 
 
 void OswAppSnakeGame::useLastDirection() {
   if (lastDirection == UP) {

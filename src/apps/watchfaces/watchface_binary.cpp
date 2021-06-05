@@ -60,7 +60,11 @@ void OswAppWatchfaceBinary::drawWatch(OswHal* hal, Graphics2D* gfx2d) {
   hal->gfx()->drawLine(width /2 + 40, height / 8 * 1, width /2 + 40, height / 8 * 7, ui->getForegroundColor());
 
   //steps
+#ifndef DISABLE_SENSOR
   uint32_t steps = hal->getStepCount();
+#else
+  uint32_t steps = 0;
+#endif
   hal->gfx()->setTextSize(1);
   hal->gfx()->setTextColor(ui->getForegroundColor(),ui->getBackgroundColor());
   hal->gfx()->setTextCursor(width /2 + 48, height / 2 + 32 + 16);

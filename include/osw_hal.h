@@ -33,7 +33,9 @@ class OswHal {
   void setupButtons(void);
   void setupDisplay(void);
   void setupPower(void);
+#ifndef DISABLE_SENSOR
   void setupSensors(void);
+#endif
   void setupTime(void);
 #if defined(GPS_EDITION)
   uint8_t setupSD(void);
@@ -120,17 +122,18 @@ class OswHal {
   void deepSleep();
 
   // Sensors
+#ifndef DISABLE_SENSOR
   bool hasBMA400(void);
-  bool hasDS3231(void);
   void updateAccelerometer(void);
   float getAccelerationX(void);
   float getAccelerationY(void);
   float getAccelerationZ(void);
   uint32_t getStepCount(void);
   uint8_t getActivityMode(void);
+#endif
 
   // Time
-
+  bool hasRV8523(void);
   void updateTimeViaNTP(long gmtOffset_sec, int daylightOffset_sec, uint32_t timeout_sec);
   void setUTCTime(long);
   uint32_t getUTCTime(void);

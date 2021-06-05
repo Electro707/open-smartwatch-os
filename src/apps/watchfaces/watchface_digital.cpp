@@ -97,7 +97,11 @@ void drawTime24Hour(OswHal* hal) {
 }
 
 void drawSteps(OswHal* hal) {
+#ifndef DISABLE_SENSOR
   uint32_t steps = hal->getStepCount();
+#else
+  uint32_t steps = 0;
+#endif
   hal->gfx()->setTextCenterAligned();
   hal->gfx()->setTextSize(2);
   hal->gfx()->setTextCursor(120, 210 - hal->gfx()->getTextOfsetRows(1) / 2);

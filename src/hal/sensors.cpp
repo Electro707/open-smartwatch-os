@@ -1,3 +1,5 @@
+#ifndef DISABLE_SENSOR
+
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
@@ -310,3 +312,5 @@ float OswHal::getAccelerationZ(void) { return accelZ; };
 uint32_t OswHal::getStepCount(void) { return step_count; };
 
 uint8_t OswHal::getActivityMode(void) { return act_int; };
+
+#endif

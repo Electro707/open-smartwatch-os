@@ -1,4 +1,4 @@
-#include <RtcDS3231.h>
+#include <RV8523.h>
 #include <Wire.h>
 #include <config.h>
 #include <osw_config.h>
@@ -8,25 +8,26 @@
 #include <string>
 
 #include "osw_hal.h"
-RtcDS3231<TwoWire> Rtc(Wire);
+
+void _rv8526_i2c_read(int read_how_much, uint8_t *data_buff);
+void _rv8526_i2c_write(uint8_t *data, uint8_t len);
+
+RV8523 Rtc;
+
+// void RV8523::i2c_begin(void){
+//   Wire.begin(SDA, SCL, 100000L);
+// } 
+
 
 void OswHal::setupTime(void) {
   Wire.begin(SDA, SCL, 100000L);
 
-  Rtc.Begin();
-  Rtc.Enable32kHzPin(false);
-  if (!Rtc.LastError()) {
-    Rtc.SetSquareWavePin(DS3231SquareWavePin_ModeNone);
-    RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
+  Rtc.i2c_read = &_rv8526_i2c_read;
+  Rtc.i2c_write = &_rv8526_i2c_write;
 
-    if (!Rtc.IsDateTimeValid()) {
-      Rtc.SetDateTime(compiled);
-    }
-    if (!Rtc.GetIsRunning()) {
-      Serial.println("RTC was not actively running, starting now");
-      Rtc.SetIsRunning(true);
-    }
-  }
+
+  Rtc.begin();
+  Rtc.start();
 
   // how to register interrupts:
   // pinMode(RTC_INT, INPUT);
@@ -39,7 +40,7 @@ void OswHal::setupTime(void) {
   // Rtc.SetAlarmOne(alarm1);
 }
 
-bool OswHal::hasDS3231(void) { return getUTCTime() > 0; }
+bool OswHal::hasRV8523(void) { return getUTCTime() > 0; }
 
 uint32_t OswHal::getUTCTime(void) { return Rtc.GetDateTime().Epoch32Time(); }
 uint32_t OswHal::getLocalTime(void) { return getUTCTime() + 3600 * OswConfigAllKeys::timeZone.get() + (long)(3600 * OswConfigAllKeys::daylightOffset.get()); }
@@ -59,53 +60,53 @@ void OswHal::getUTCTime(uint32_t *hour, uint32_t *minute, uint32_t *second) {
 }
 
 void OswHal::getLocalTime(uint32_t *hour, uint32_t *minute, uint32_t *second) {
-  RtcDateTime d = RtcDateTime();
-  d.InitWithEpoch32Time(getLocalTime());
+  rv8523_time_struct time;
+  Rtc.get_time(&time);
   if (!OswConfigAllKeys::timeFormat.get()) {
-    if (d.Hour() > 12) {
-      *hour = d.Hour() - 12;
-    } else if (d.Hour() == 0) {
+    if (time.hours > 12) {
+      *hour = time.hours - 12;
+    } else if (time.hours == 0) {
       *hour = 12;
     } else {
-      *hour = d.Hour();
+      *hour = time.hours;
     }
   } else {
-    *hour = d.Hour();
+    *hour = time.hours;
   }
-  *minute = d.Minute();
-  *second = d.Second();
+  *second = time.seconds;
+  *minute = time.minutes;
 }
 
 void OswHal::getLocalTime(uint32_t *hour, uint32_t *minute, uint32_t *second, bool *afterNoon) {
-  RtcDateTime d = RtcDateTime();
-  d.InitWithEpoch32Time(getLocalTime());
+  rv8523_time_struct time;
+  Rtc.get_time(&time);
   if (!OswConfigAllKeys::timeFormat.get()) {
-    if (d.Hour() > 12) {
-      *hour = d.Hour() - 12;
+    if (time.hours > 12) {
+      *hour = time.hours - 12;
       *afterNoon = true;
-    } else if (d.Hour() == 0) {
+    } else if (time.hours == 0) {
       *hour = 12;
       *afterNoon = false;
-    } else if (d.Hour() == 12) {
-      *hour = d.Hour();
+    } else if (time.hours == 12) {
+      *hour = time.hours;
       *afterNoon = true;
     } else {
-      *hour = d.Hour();
+      *hour = time.hours;
       *afterNoon = false;
     }
   } else {
-    *hour = d.Hour();
+    *hour = time.hours;
     *afterNoon = false;
   }
-  *minute = d.Minute();
-  *second = d.Second();
+  *second = time.seconds;
+  *minute = time.minutes;
 }
 
 void OswHal::getDate(uint32_t *day, uint32_t *weekDay) {
-  RtcDateTime d = RtcDateTime();
-  d.InitWithEpoch32Time(getLocalTime());
-  *weekDay = d.DayOfWeek();
-  *day = d.Day();
+  rv8523_time_struct time;
+  Rtc.get_time(&time);
+  *day = time.date;
+  *weekDay = time.weekday;
 }
 
 void OswHal::getDate(uint32_t *day, uint32_t *month, uint32_t *year) {
@@ -161,4 +162,20 @@ void OswHal::updateTimeViaNTP(long gmtOffset_sec, int daylightOffset_sec, uint32
       setUTCTime(time(nullptr));
     }
   }
+}
+
+void _rv8526_i2c_read(int read_how_much, uint8_t *data_buff){
+  int i = 0;
+  Wire.requestFrom(RV8523_I2C_ADDRESS, read_how_much);
+  while(Wire.available()){
+    data_buff[i++] = Wire.read();
+  }
+}
+
+void _rv8526_i2c_write(uint8_t *data, uint8_t len){
+  Wire.beginTransmission(RV8523_I2C_ADDRESS);
+  for(int i=0;i<len;i++){
+    Wire.write(data[i]);
+  }
+  Wire.endTransmission();
 }

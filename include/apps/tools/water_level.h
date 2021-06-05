@@ -1,6 +1,8 @@
 #ifndef OSW_APP_WATER_LEVEL_H
 #define OSW_APP_WATER_LEVEL_H
 
+#ifndef DISABLE_SENSOR
+
 #include <osw_hal.h>
 #include <osw_ui.h>
 
@@ -21,5 +23,7 @@ class OswAppWaterLevel : public OswApp {
  private:
   OswUI* ui;
 };
+
+#endif
 
 #endif
