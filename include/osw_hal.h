@@ -137,7 +137,7 @@ class OswHal {
   void updateTimeViaNTP(long gmtOffset_sec, int daylightOffset_sec, uint32_t timeout_sec);
   void setUTCTime(long);
   uint32_t getUTCTime(void);
-  void getUTCTime(uint32_t* hour, uint32_t* minute, uint32_t* second);
+  // void getUTCTime(uint32_t* hour, uint32_t* minute, uint32_t* second);
   uint32_t getLocalTime(void);
   void getLocalTime(uint32_t* hour, uint32_t* minute, uint32_t* second);
   void getLocalTime(uint32_t* hour, uint32_t* minute, uint32_t* second, bool* afterNoon);

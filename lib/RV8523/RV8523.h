@@ -23,6 +23,12 @@ class RV8523{
         void begin(void);
         void start(void);
         void get_time(struct rv8523_time_struct *time);
+        uint32_t get_epoch_time(void);
+        void set_time(struct rv8523_time_struct *time);
+        void set_epoch_time(uint32_t epoch);
+
+        void from_epoch_to_time(uint32_t epoch, struct rv8523_time_struct *t);
+        uint32_t from_time_to_epoch(struct rv8523_time_struct *t);
 
 
         /**
@@ -34,6 +40,8 @@ class RV8523{
     
     private:
         void i2c_read_register(uint8_t start_reg, uint8_t len, uint8_t *data_buff);
+        uint8_t dec_to_bcd(uint8_t dec);
+        uint8_t bcd_to_dec(uint8_t bdc);
 };
 
 #endif

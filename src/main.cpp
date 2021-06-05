@@ -148,6 +148,9 @@ void setup() {
   serviceManager.setup(hal);  // Services should always start before apps do
   mainAppSwitcher->setup(hal);
   displayTimeout = OswConfigAllKeys::settingDisplayTimeout.get();
+#ifdef DEBUG
+  Serial.print("Done with setup");
+#endif
 }
 
 void loop() {

@@ -42,26 +42,24 @@ void OswHal::setupTime(void) {
 
 bool OswHal::hasRV8523(void) { return getUTCTime() > 0; }
 
-uint32_t OswHal::getUTCTime(void) { return Rtc.GetDateTime().Epoch32Time(); }
+uint32_t OswHal::getUTCTime(void) { return Rtc.get_epoch_time(); }
 uint32_t OswHal::getLocalTime(void) { return getUTCTime() + 3600 * OswConfigAllKeys::timeZone.get() + (long)(3600 * OswConfigAllKeys::daylightOffset.get()); }
 
 void OswHal::setUTCTime(long epoch) {
-  RtcDateTime t = RtcDateTime();
-  t.InitWithEpoch32Time(epoch);
-  Rtc.SetDateTime(t);
+  Rtc.set_epoch_time(epoch);
 }
 
-void OswHal::getUTCTime(uint32_t *hour, uint32_t *minute, uint32_t *second) {
-  RtcDateTime d = RtcDateTime();
-  d.InitWithEpoch32Time(getUTCTime());
-  *hour = d.Hour();
-  *minute = d.Minute();
-  *second = d.Second();
-}
+// void OswHal::getUTCTime(uint32_t *hour, uint32_t *minute, uint32_t *second) {
+//   RtcDateTime d = RtcDateTime();
+//   d.InitWithEpoch32Time(getUTCTime());
+//   *hour = d.Hour();
+//   *minute = d.Minute();
+//   *second = d.Second();
+// }
 
 void OswHal::getLocalTime(uint32_t *hour, uint32_t *minute, uint32_t *second) {
   rv8523_time_struct time;
-  Rtc.get_time(&time);
+  Rtc.from_epoch_to_time(getLocalTime(), &time);
   if (!OswConfigAllKeys::timeFormat.get()) {
     if (time.hours > 12) {
       *hour = time.hours - 12;
@@ -79,7 +77,7 @@ void OswHal::getLocalTime(uint32_t *hour, uint32_t *minute, uint32_t *second) {
 
 void OswHal::getLocalTime(uint32_t *hour, uint32_t *minute, uint32_t *second, bool *afterNoon) {
   rv8523_time_struct time;
-  Rtc.get_time(&time);
+  Rtc.from_epoch_to_time(getLocalTime(), &time);
   if (!OswConfigAllKeys::timeFormat.get()) {
     if (time.hours > 12) {
       *hour = time.hours - 12;
@@ -104,17 +102,17 @@ void OswHal::getLocalTime(uint32_t *hour, uint32_t *minute, uint32_t *second, bo
 
 void OswHal::getDate(uint32_t *day, uint32_t *weekDay) {
   rv8523_time_struct time;
-  Rtc.get_time(&time);
+  Rtc.from_epoch_to_time(getLocalTime(), &time);
   *day = time.date;
   *weekDay = time.weekday;
 }
 
 void OswHal::getDate(uint32_t *day, uint32_t *month, uint32_t *year) {
-  RtcDateTime d = RtcDateTime();
-  d.InitWithEpoch32Time(getLocalTime());
-  *day = d.Day();
-  *month = d.Month();
-  *year = d.Year();
+  rv8523_time_struct time;
+  Rtc.from_epoch_to_time(getLocalTime(), &time);
+  *day = time.date;
+  *month = time.month;
+  *year = time.year;
 }
 
 void OswHal::getWeekdayString(int firstNChars, string *output) {
