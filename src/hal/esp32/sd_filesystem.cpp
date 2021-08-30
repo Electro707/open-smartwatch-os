@@ -8,6 +8,7 @@ bool _hasSD = false;
 bool _isSDMounted = false;
 
 bool SDFileSystemHal::initialize() {
+#ifdef GPS_EDITION
   // Mount the filesystem and register vfs
   SD.begin(SD_CS);
 
@@ -32,4 +33,7 @@ bool SDFileSystemHal::initialize() {
     _isSDMounted = true;
     return true;
   }
+#else
+  return false;
+#endif
 }

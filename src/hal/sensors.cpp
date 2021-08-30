@@ -218,6 +218,7 @@ void IRAM_ATTR isrTap() {
 }
 
 void OswHal::setupSensors() {
+#ifndef E707_REV2_EDITION
   struct bma400_sensor_conf accel_setting[3] = {{}};
   struct bma400_int_enable int_en[3];
   int8_t rslt = 0;
@@ -281,11 +282,13 @@ void OswHal::setupSensors() {
 
   attachInterrupt(BMA_INT_1, isrTap, FALLING);
   attachInterrupt(BMA_INT_2, isrStep, FALLING);
+#endif
 }
 
 bool OswHal::hasBMA400(void) { return _hasBMA400; }
 
 void OswHal::updateAccelerometer(void) {
+#ifndef E707_REV2_EDITION
   int8_t rslt = BMA400_OK;
   struct bma400_sensor_data data;
 
@@ -305,6 +308,7 @@ void OswHal::updateAccelerometer(void) {
   }
   // TODO: add getter
   accelT = (float)data.sensortime * SENSOR_TICK_TO_S;
+#endif
 }
 float OswHal::getAccelerationX(void) {
 #if defined(GPS_EDITION)

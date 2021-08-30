@@ -4,28 +4,33 @@
 #include "osw_pins.h"
 
 // assign pins to buttons
+#ifndef E707_REV2_EDITION
 uint8_t buttonPins[] = {BTN_1, BTN_2, BTN_3};  // see osw_pins.h
+#endif
 // assign active LOW or HIGH states according to hardware
 uint8_t buttonClickStates[] = {LOW, HIGH, HIGH};
 
 // Graphics2D screenBuffer(DISP_W, DISP_H, DISP_CHUNK_H);
 
 void OswHal::setupButtons(void) {
+#ifndef E707_REV2_EDITION
   // rtc_gpio_deinit(GPIO_NUM_0);
   // rtc_gpio_deinit(GPIO_NUM_10);
   // rtc_gpio_deinit(GPIO_NUM_13);
   pinMode(BTN_1, INPUT);
   pinMode(BTN_2, INPUT);
   pinMode(BTN_3, INPUT);
+#endif
 #ifdef GPS_EDITION
   pinMode(VIBRATE, OUTPUT);
 #endif
-
   // Buttons (Engine)
   for (uint8_t i = 0; i < 3; i++) {
     _btnLastState[i] = false;
     _btnIsDown[i] = false;
     _btnGoneUp[i] = false;
+    _btnGoneDown[i] = false;
+    _btnLongPress[i] = false;
   }
 }
 
@@ -42,6 +47,7 @@ void OswHal::vibrate(long millis) {
 #endif
 
 void OswHal::checkButtons(void) {
+#ifndef E707_REV2_EDITION
   // Buttons (Engine)
   for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
     _btnIsDown[i] = digitalRead(buttonPins[i]) == buttonClickStates[i];
@@ -73,6 +79,7 @@ void OswHal::checkButtons(void) {
       _btnSuppressUntilUpAgain[i] = false;
     }
   }
+#endif
 }
 
 // Buttons (Engine)

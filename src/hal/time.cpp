@@ -1,4 +1,10 @@
+#ifdef E707_REV2_EDITION
+#include <Arduino.h>
+#include <RtcDateTime.h>
+#include <RV-3028-C7.h>
+#else
 #include <RtcDS3231.h>
+#endif
 #include <Wire.h>
 #include <config.h>
 #include <osw_config.h>
@@ -8,10 +14,27 @@
 #include <string>
 
 #include "osw_hal.h"
+#ifdef E707_REV2_EDITION
+RV3028 Rtc;
+#else
 RtcDS3231<TwoWire> Rtc(Wire);
+#endif
 
 void OswHal::setupTime(void) {
   Wire.begin(SDA, SCL, 100000L);
+
+#ifdef E707_REV2_EDITION
+  if(Rtc.begin() == false){
+    Serial.println("Error while beginning the RTC!!!!!");
+    return;
+  }
+  Rtc.set24Hour();
+  Rtc.clearInterrupts();
+  Rtc.disableTrickleCharge();
+  RtcDateTime compiled = RtcDateTime(__DATE__, __TIME__);
+  Rtc.setTime(compiled.Second(), compiled.Minute(), compiled.Hour(), compiled.DayOfWeek(), compiled.Day(), compiled.Month(), compiled.Year());
+  Rtc.updateTime();
+#else
 
   Rtc.Begin();
   Rtc.Enable32kHzPin(false);
@@ -27,6 +50,7 @@ void OswHal::setupTime(void) {
       Rtc.SetIsRunning(true);
     }
   }
+#endif
 
   // how to register interrupts:
   // pinMode(RTC_INT, INPUT);
@@ -41,13 +65,28 @@ void OswHal::setupTime(void) {
 
 bool OswHal::hasDS3231(void) { return getUTCTime() > 0; }
 
+#ifdef E707_REV2_EDITION
+uint32_t OswHal::getUTCTime(void) {
+  bool e = Rtc.updateTime();
+#ifdef DEBUG
+  if(e == false){Serial.println("Error while reading RTC time");}
+#endif
+  RtcDateTime t = RtcDateTime(Rtc.getYear(), Rtc.getMonth(), Rtc.getWeekday(), Rtc.getHours(), Rtc.getMinutes(), Rtc.getSeconds());
+  return t.Epoch32Time(); 
+}
+#else
 uint32_t OswHal::getUTCTime(void) { return Rtc.GetDateTime().Epoch32Time(); }
+#endif
 uint32_t OswHal::getLocalTime(void) { return getUTCTime() + 3600 * OswConfigAllKeys::timeZone.get() + (long)(3600 * OswConfigAllKeys::daylightOffset.get()); }
 
 void OswHal::setUTCTime(long epoch) {
   RtcDateTime t = RtcDateTime();
   t.InitWithEpoch32Time(epoch);
+  #ifdef E707_REV2_EDITION
+  Rtc.setTime(t.Second(), t.Minute(), t.Hour(), t.DayOfWeek(), t.Day(), t.Month(), t.Year());
+  #else
   Rtc.SetDateTime(t);
+  #endif
 }
 
 void OswHal::getUTCTime(uint32_t *hour, uint32_t *minute, uint32_t *second) {

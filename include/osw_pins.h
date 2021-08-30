@@ -10,6 +10,14 @@
 #define TFT_MOSI 23
 #define TFT_MISO -1  // no data coming back
 #define TFT_LED 9
+#elif defined(E707_REV2_EDITION)
+#define TFT_CS 4
+#define TFT_DC 12
+#define TFT_RST 33
+#define TFT_SCK 14
+#define TFT_MOSI 13
+#define TFT_MISO -1  // no data coming back
+#define TFT_LED 27
 #else
 #define TFT_CS 5
 #define TFT_DC 12
@@ -20,6 +28,7 @@
 #define TFT_LED 9
 #endif
 
+#if defined(GPS_EDITION)
 #define SD_CS 4
 // SD_MISO 19
 // for SCK, MOSI see TFT
@@ -31,16 +40,22 @@
 #define GPS_GEO_FENCE 39
 #define RX1 27
 #define TX1 14
+#endif
 
+#ifdef E707_REV2_EDITION
+#define RTC_INT 23
+#else
 #define RTC_INT 32
 #define BMA_INT_1 34
 #define BMA_INT_2 35
+#endif
 
 #if defined(GPS_EDITION)
 #define BTN_1 0
 #define BTN_2 33
 #define BTN_3 13
 #define VIBRATE 35
+#elif defined(E707_REV2_EDITION)
 #else
 #define BTN_1 0
 #define BTN_2 10
@@ -50,10 +65,20 @@
 #define BTN_1_APP_SWITCH_TIMEOUT 500
 #define BTN_1_SLEEP_TIMEOUT 1500
 
+#ifdef E707_REV2_EDITION
+#define SCL 21
+#define SDA 22
+#else
 #define SCL 22
 #define SDA 21
+#endif
 
+#ifdef E707_REV2_EDITION
+#define STAT_PWR 10
+#else
 #define STAT_PWR 15
+#endif
+
 #define B_MON 25
 
 #endif
