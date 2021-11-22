@@ -111,7 +111,7 @@
 #endif
 
 #ifndef DO_LIGHT_SLEEP
-#define DO_LIGHT_SLEEP false
+#define DO_LIGHT_SLEEP true
 #endif
 
 #ifndef THEME_BACKROUND_COLOR

@@ -2,10 +2,15 @@
 #include "driver/rtc_io.h"
 #include "osw_hal.h"
 #include "osw_pins.h"
+#ifdef E707_REV2_EDITION
+#include "IT7259.h"
+#endif
 
 // assign pins to buttons
 #ifndef E707_REV2_EDITION
 uint8_t buttonPins[] = {BTN_1, BTN_2, BTN_3};  // see osw_pins.h
+#else
+IT7259 touch_handler = IT7259(18);
 #endif
 // assign active LOW or HIGH states according to hardware
 #if defined(GPS_EDITION_ROTATED)
@@ -17,7 +22,13 @@ uint8_t buttonClickStates[] = {LOW, HIGH, HIGH};
 // Graphics2D screenBuffer(DISP_W, DISP_H, DISP_CHUNK_H);
 
 void OswHal::setupButtons(void) {
-#ifndef E707_REV2_EDITION
+#ifdef E707_REV2_EDITION
+  Wire.begin(SDA, SCL, 100000L);
+  touch_handler.init();
+  int is_sensor = touch_handler.identify_sensor();
+  Serial.print("Sensor: "); Serial.println(is_sensor);
+  touch_handler.enable_interrupt_on_touch();
+#else
   // rtc_gpio_deinit(GPIO_NUM_0);
   // rtc_gpio_deinit(GPIO_NUM_10);
   // rtc_gpio_deinit(GPIO_NUM_13);
@@ -58,7 +69,32 @@ void OswHal::checkButtons(void) {
     _btnIsDown[i] = digitalRead(buttonPins[i]) == buttonClickStates[i];
   }
 
-  for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
+#else
+  IT7259_Touch touch_data = touch_handler.read_touch_point();
+  Serial.print("x1: "); Serial.print(touch_data.x1);
+  Serial.print(", y1: ");Serial.print(touch_data.y1);
+  Serial.print(", is_touch: ");Serial.println(touch_data.is_touch);
+
+  if(touch_data.is_touch){
+    if (touch_data.x1 < 150)
+    {
+      _btnIsDown[0] = true;
+    } else {
+      if(touch_data.y1 < 100){
+        _btnIsDown[1] = true;
+      } else {
+        _btnIsDown[2] = true;
+      }
+      
+    }
+    
+  } else {
+    for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
+      _btnIsDown[i] = false; 
+    }
+  }
+#endif
+ for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
     _btnGoneUp[i] = _btnLastState[i] == true && _btnIsDown[i] == false;
     _btnGoneDown[i] = _btnLastState[i] == false && _btnIsDown[i] == true;
 
@@ -84,7 +120,6 @@ void OswHal::checkButtons(void) {
       _btnSuppressUntilUpAgain[i] = false;
     }
   }
-#endif
 }
 
 // Buttons (Engine)

@@ -140,7 +140,12 @@ void doSleep(bool deepSleep, long millis = 0) {
    */
   if (OswConfigAllKeys::raiseToWakeEnabled.get() || OswConfigAllKeys::tapToWakeEnabled.get()) {
     if (!OswConfigAllKeys::buttonToWakeEnabled.get()) {
+#ifdef E707_REV2_EDITION
+      gpio_wakeup_enable(GPIO_NUM_19, GPIO_INTR_LOW_LEVEL);
+      esp_sleep_enable_gpio_wakeup();
+#else
       esp_sleep_enable_ext0_wakeup(GPIO_NUM_34 /* BTN_1 */, HIGH);
+#endif
     } else {
       esp_sleep_enable_ext1_wakeup(0x400000000 /* BTN_1 = GPIO_34 = 2^34 as bitmask */, ESP_EXT1_WAKEUP_ANY_HIGH);
     }
