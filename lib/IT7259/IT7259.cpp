@@ -3,16 +3,16 @@
 // Based off example code from https://www.buydisplay.com/240x240-round-ips-tft-lcd-display-1-28-inch-capactive-touch-circle-screen
 // Need to refractor some things later on
 
-#define IT7259_ADDRESS 0x8C >> 1
+#define IT7259_ADDRESS 0x46
 
-#define COMMAND_BUFFER_INDEX   				0x20 
+#define COMMAND_BUFFER_INDEX   				    0x20 
 #define QUERY_BUFFER_INDEX						0x80
-#define COMMAND_RESPONSE_BUFFER_INDEX 0xA0 
-#define POINT_BUFFER_INDEX    				0xE0 
+#define COMMAND_RESPONSE_BUFFER_INDEX           0xA0 
+#define POINT_BUFFER_INDEX    				    0xE0 
 #define QUERY_SUCCESS     						0x00 
-#define QUERY_BUSY     								0x01 
-#define QUERY_ERROR     							0x02 
-#define QUERY_POINT     							0x80 
+#define QUERY_BUSY     							0x01 
+#define QUERY_ERROR     						0x02 
+#define QUERY_POINT     						0x80 
 
 IT7259::IT7259(int reset_pin){
     _reset_pin = reset_pin;
@@ -32,13 +32,23 @@ IT7259_Touch IT7259::read_touch_point(void){
     IT7259_Touch ret;
     ret.is_touch = false;
     uint8_t pointdata[14];
-    if(read_memory_buffer(POINT_BUFFER_INDEX, pointdata, 5)) return ret;
-    if(pointdata[0] & 0x08)													//point
-    {
-        ret.x1 = ((pointdata[3] & 0x0F) << 8) + pointdata[2];
-        ret.y1 = ((pointdata[3] & 0xF0) << 4) + pointdata[4];
-        ret.is_touch = true;
+
+    uint8_t read_buff[2];
+    read_memory_buffer(QUERY_BUFFER_INDEX, read_buff, 1);
+    // There could be touch, but the internal "gesture" doesn't report anything. So don't do anything, i guess
+    if((read_buff[0] >> 6) == 0){     
+        return ret;
     }
+
+    if(read_memory_buffer(POINT_BUFFER_INDEX, pointdata, 5)) return ret;
+
+    if((pointdata[0] >> 4) == 0 && (pointdata[0] & 0x08) == 0){     
+        return ret;
+    }
+
+    ret.x1 = ((pointdata[3] & 0x0F) << 8) + pointdata[2];
+    ret.y1 = ((pointdata[3] & 0xF0) << 4) + pointdata[4];
+    ret.is_touch = true;
 
     return ret;
 }

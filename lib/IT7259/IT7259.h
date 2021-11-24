@@ -8,6 +8,7 @@ struct IT7259_Touch{
     unsigned int x1 = 0;
     unsigned int y1 = 0;
     bool is_touch = false;
+    bool is_hold = false;
 };
 
 class IT7259 {

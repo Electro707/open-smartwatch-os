@@ -15,6 +15,8 @@ IT7259 touch_handler = IT7259(18);
 // assign active LOW or HIGH states according to hardware
 #if defined(GPS_EDITION_ROTATED)
 uint8_t buttonClickStates[] = {HIGH, HIGH, LOW};
+#elif defined(E707_REV2_EDITION)
+
 #else
 uint8_t buttonClickStates[] = {LOW, HIGH, HIGH};
 #endif
@@ -71,26 +73,25 @@ void OswHal::checkButtons(void) {
 
 #else
   IT7259_Touch touch_data = touch_handler.read_touch_point();
+#ifdef DEBUG
   Serial.print("x1: "); Serial.print(touch_data.x1);
   Serial.print(", y1: ");Serial.print(touch_data.y1);
   Serial.print(", is_touch: ");Serial.println(touch_data.is_touch);
-
+#endif
+  for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
+    _btnIsDown[i] = false; 
+  }
   if(touch_data.is_touch){
-    if (touch_data.x1 < 150)
+    if (touch_data.x1 < 110)
     {
       _btnIsDown[0] = true;
     } else {
-      if(touch_data.y1 < 100){
+      if(touch_data.y1 > 100){
         _btnIsDown[1] = true;
       } else {
         _btnIsDown[2] = true;
       }
       
-    }
-    
-  } else {
-    for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
-      _btnIsDown[i] = false; 
     }
   }
 #endif
