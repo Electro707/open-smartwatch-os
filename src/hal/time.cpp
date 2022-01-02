@@ -206,4 +206,7 @@ float OswHal::getTemperature() {
   return rtcTemp.AsFloatDegC();
 }
 #endif
+#if !defined(GPS_EDITION) && !defined(GPS_EDITION_ROTATED)
+// Okay, in that case let's use the alternative way of getting the temperature by asking the RTC!
+float OswHal::getTemperature() { return this->getTemperatureDS3231MZ(); }
 #endif
